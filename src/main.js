@@ -20,7 +20,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 9;
 
-const starTexture = new THREE.TextureLoader(loadingManager).load('./resources/stars.jpg');
+const starTexture = new THREE.TextureLoader(loadingManager).load('/resources/stars.jpg');
 starTexture.colorSpace = THREE.SRGBColorSpace;
 
 const bigSphereGeometry = new THREE.SphereGeometry(16, 128, 128);
@@ -47,25 +47,25 @@ const orbitRadius = 4.7;
 const planets = [
   {
     name: 'Earth',
-    texture: './resources/earth/map.jpg',
+    texture: '/resources/earth/map.jpg',
     description: 'Our home world — a blue marble of vast oceans, lush continents, and the only known harbor of life in the cosmos.',
     color: '#4fc3f7'
   },
   {
     name: 'Volcanic',
-    texture: './resources/venus/map.jpg',
+    texture: '/resources/venus/map.jpg',
     description: 'The scorching twin — shrouded in thick clouds of sulfuric acid, with surface temperatures hot enough to melt lead.',
     color: '#ffcc80'
   },
   {
     name: 'Csilla',
-    texture: './resources/csilla/color.png',
+    texture: '/resources/csilla/color.png',
     description: 'A mysterious ice world drifting at the edge of its star system, hiding ancient secrets beneath its frozen crust.',
     color: '#b3e5fc'
   },
   {
     name: 'Venus',
-    texture: './resources/volcanic/color.png',
+    texture: '/resources/volcanic/color.png',
     description: 'A world of fire and fury — its surface reshaped constantly by colossal eruptions painting the sky in molten red.',
     color: '#ff7043'
   }
