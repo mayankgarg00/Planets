@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planets – Solar Explorer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@1,400;1,700;1,900&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: black;
+      overflow: hidden;
+      color: white;
+    }
+
+    #planet-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    nav {
+      pointer-events: all;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2.5rem 2.5rem 0;
+    }
+
+    nav h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.85;
+    }
+
+    nav .links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    nav .links a {
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.55;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      pointer-events: all;
+    }
+
+    nav .links a:hover { opacity: 1; }
+
+    #planet-name-wrap {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      width: max-content;
+      max-width: 90vw;
+    }
+
+    #planet-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-weight: 900;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      color: #ffffff;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 10px;
+      text-decoration-color: rgba(255,255,255,0.45);
+      text-shadow: 0 0 80px rgba(255,255,255,0.12);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    #planet-tagline {
+      margin-top: 0.6rem;
+      font-size: 0.68rem;
+      font-weight: 300;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      transition: opacity 0.35s ease 0.1s;
+    }
+
+    #planet-desc-text {
+      margin-top: 0.9rem;
+      font-size: 0.78rem;
+      font-weight: 300;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.6);
+      max-width: 46ch;
+      margin-left: auto;
+      margin-right: auto;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    #scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      opacity: 0.35;
+      transition: opacity 0.5s;
+      animation: nudge 2s ease-in-out infinite;
+    }
+
+    #scroll-hint span {
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+    }
+
+    #scroll-hint svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    @keyframes nudge {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(5px); }
+    }
+
+    #planet-name,
+    #planet-tagline,
+    #planet-desc-text {
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    /* ── Loader ── */
+    #loader-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #loader-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-ring {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.08);
+      border-top-color: rgba(255,255,255,0.7);
+      animation: loader-spin 1s linear infinite;
+    }
+
+    .loader-text {
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      animation: loader-pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes loader-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes loader-pulse {
+      0%, 100% { opacity: 0.4; }
+      50%      { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loader -->
+  <div id="loader-overlay">
+    <div class="loader-ring"></div>
+    <span class="loader-text">Loading Experience</span>
+  </div>
+
+  <div id="planet-overlay">
+
+    <nav>
+      <h3>Planets</h3>
+      <div class="links">
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </div>
+    </nav>
+
+    <div id="planet-name-wrap">
+      <h1 id="planet-name">Earth</h1>
+      <p id="planet-tagline">Third Rock from the Sun</p>
+      <p id="planet-desc-text">
+        Our home world — a blue marble of vast oceans, lush continents, and the only known harbor of life in the cosmos.
+      </p>
+    </div>
+
+    <div id="scroll-hint">
+      <span>Scroll to explore</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+
+  <script>
+    const nameEl    = document.getElementById('planet-name');
+    const taglineEl = document.getElementById('planet-tagline');
+    const descEl    = document.getElementById('planet-desc-text');
+    const hintEl    = document.getElementById('scroll-hint');
+
+    const taglines = {
+      Earth:    'Third Rock from the Sun',
+      Volcanic: 'The Morning Star',
+      Csilla:   'Edge of the Known',
+      Venus:    'World of Fire',
+    };
+
+    function updatePlanet(planet) {
+      nameEl.style.opacity   = '0';
+      nameEl.style.transform = 'translateY(-10px)';
+      taglineEl.style.opacity = '0';
+      descEl.style.opacity   = '0';
+      descEl.style.transform = 'translateY(8px)';
+
+      setTimeout(() => {
+        nameEl.textContent    = planet.name;
+        taglineEl.textContent = taglines[planet.name] || '';
+        descEl.textContent    = planet.description;
+
+        nameEl.style.opacity   = '1';
+        nameEl.style.transform = 'translateY(0)';
+        taglineEl.style.opacity = '1';
+        descEl.style.opacity   = '1';
+        descEl.style.transform = 'translateY(0)';
+      }, 350);
+    }
+
+    window.addEventListener('planetchange', (e) => updatePlanet(e.detail));
+
+    window.addEventListener('wheel', () => {
+      hintEl.style.opacity = '0';
+    }, { once: true });
+  </script>
+</body>
+</html>
